@@ -1,5 +1,5 @@
 # RNA_Seq 
-# RNA-seq analysis pipeline
+#### RNA-seq analysis pipeline
 #### 1. Download reference genome and index fasta file hg38p12
 #### 2. Align reads to reference genome
 #### 3. Sort and index bam file
