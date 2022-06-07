@@ -4,13 +4,13 @@
 ```
 wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
 ```
-#### 2. Align reads to reference genome
+#### 2. Align paired ends reads to reference genome and write raw bam file
 ```
-bwa mem -t 4 hg38.p12.fa 253_POS_1_S1_R1_001.fastq.gz 253_POS_1_S1_R2_001.fastq.gz | samtools view -b > POS_1.raw.bam
+for i in ctrl1 ctrl2 ctrl3 sample1 sample2 sample3; do bwa mem -t 4 hg38.p12.fa $i_R1_001.fastq.gz $i_R2_001.fastq.gz | samtools view -b > $i.raw.bam ; done
 ```
 #### 3. Sort and index bam file
 ```
-sambamba sort -t 1 -m 32G -p --tmpdir /scratch -o POS_1.bam POS_1.raw.bam
+for i in ctrl1 ctrl2 ctrl3 sample1 sample2 sample3; do sambamba sort -t 1 -m 32G -p --tmpdir /scratch -o $i.bam $i.raw.bam
 ```
 #### 4. Download annotation gtf hg38 gtf
 ```
@@ -18,39 +18,32 @@ wget ftp://ftp.ensembl.org/pub/release-94/gtf/homo_sapiens/Homo_sapiens.GRCh38.9
 ```
 #### 5. Count reads
 ```
-featureCounts.img featureCounts -p -B -C -t exon -g gene_id -a /data/annotation/Homo_sapiens.GRCh38.95.gtf -F GTF -o /data/countsLonardo.txt /data/raw/bam/CTR.1.bam /data/raw/bam/CTR.2.bam /data/raw/bam/CTR.3.bam /data/raw/bam/NODAL.1.bam /data/raw/bam/NODAL.2.bam /data/raw/bam/NODAL.3.bam /data/raw/bam/POS.1.bam /data/raw/bam/POS.2.bam /data/raw/bam/POS.3.bam /data/raw/bam/NEG.1.bam /data/raw/bam/NEG.2.bam /data/raw/bam/NEG.3.bam
+featureCounts -p -B -C -t exon -g gene_id -a /data/annotation/Homo_sapiens.GRCh38.95.gtf -F GTF -o readCounts.txt ctrl1.bam ctrl2.bam ctrl3.bam sample1.bam sample2.bam sample3.bam
 ```
 #### 6. Reorganize file counts.txt (remove first line, change sample names, take only information about reads count)
 ```
-cat countsLonardo.txt | grep -v "^#" >allcounts.txt
+cat readCounts.txt | grep -v "^#" > allcounts.txt
 ```
 ```
-cat allcounts.txt  | awk '{print $1, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18} ' | tr " " "\t"  > Lonardo_counts.txt
+cat allcounts.txt  | awk '{print $1, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18} ' | tr " " "\t"  > finalReadCounts.txt
 ```
 #### 7. Create samples and contrast files
 ```
 samples.tsv
-CTR	CTR.1
-CTR	CTR.2
-CTR	CTR.3
-NODAL	NODAL.1
-NODAL	NODAL.2
-NODAL	NODAL.3
-POS	POS.1
-POS	POS.2
-POS	POS.3
-NEG	NEG.1
-NEG	NEG.2
-NEG	NEG.3
+CTR	ctrl1
+CTR	ctrl2
+CTR	ctrl3
+SAMPLE	sample1
+SAMPLE	sample2
+SAMPLE	sample3
 ```
 ```
 contrast.tsv
-CTR	NODAL
-POS	NEG
+CTR	SAMPLE
 ```
 #### 8. Run edgeR
 ```
-perl run_DE_analysis.pl  --matrix Lonardo_counts.txt  --method edgeR --dispersion 0.1 --samples_file samples.tsv --contrasts contrast.tsv  --output results
+perl run_DE_analysis.pl  --matrix finalReadCounts.txt --method edgeR --dispersion 0.1 --samples_file samples.tsv --contrasts contrast.tsv  --output results
 ```
 #### 9. Run gsea
 #### 10. Post edgeR
