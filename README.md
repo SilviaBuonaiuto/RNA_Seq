@@ -53,4 +53,7 @@ CTR	SAMPLE
 perl run_DE_analysis.pl  --matrix finalReadCounts.txt --method edgeR --dispersion 0.1 --samples_file samples.tsv --contrasts contrast.tsv  --output results
 ```
 #### 9. Run gsea
-#### 10. Post edgeR
+#### 10. Post edgeR (Volcano plot and heatMap)
+```
+Rscript scr/rnaSeqPlots.R experiment.edgeR.DE_results geneList.tsv "Experiment 1" experiment.volcano.png experiment.edgeR.count_matrix experiment.heatmap.png
+```
