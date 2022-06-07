@@ -1,12 +1,12 @@
 # RNA_Seq 
 #### RNA-seq analysis pipeline
 #### Required tools and programming language
-bwa (http://bio-bwa.sourceforge.net/bwa.shtml)
-samtools (http://www.htslib.org/)
-sambamba (https://lomereiter.github.io/sambamba/)
-featureCounts (http://subread.sourceforge.net/)
-edgeR(https://bioconductor.org/packages/release/bioc/html/edgeR.html)
-R
+- bwa (http://bio-bwa.sourceforge.net/bwa.shtml)
+- samtools (http://www.htslib.org/)
+- sambamba (https://lomereiter.github.io/sambamba/)
+- featureCounts (http://subread.sourceforge.net/)
+- edgeR(https://bioconductor.org/packages/release/bioc/html/edgeR.html)
+- R
 #### 1. Download reference genome and index fasta file hg38p12
 ```
 wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
